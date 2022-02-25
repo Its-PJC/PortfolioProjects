@@ -1,0 +1,54 @@
+select 
+*
+from 
+`portfolioproject-342411.portfolioproject.CovidDeaths`
+limit 5;
+
+select location, date, total_cases, new_cases, total_deaths, population
+from 
+`portfolioproject-342411.portfolioproject.CovidDeaths`
+order by 1,2;
+
+select location, date, total_cases, total_deaths,(total_deaths/total_cases*100) as death_rate
+from 
+`portfolioproject-342411.portfolioproject.CovidDeaths`
+where location = "India"
+order by 1,2;
+
+select location, date, total_cases,population,(total_cases/population*100) as infection_rate
+from 
+`portfolioproject-342411.portfolioproject.CovidDeaths`
+where location = "India"
+order by 1,2;
+
+select location, max(total_cases) as highest_infection,max(total_cases/population*100) as infection_rate
+from 
+`portfolioproject-342411.portfolioproject.CovidDeaths`
+-- where location = "India"
+group by location,population
+order by infection_rate desc;
+
+select location,max(cast(total_deaths as int)) as total_deathcount
+from 
+`portfolioproject-342411.portfolioproject.CovidDeaths`
+-- where location = "India"
+where continent is not null
+group by location,population
+order by total_deathcount desc;
+
+select location,max(cast(total_deaths as int)) as total_deathcount
+from 
+`portfolioproject-342411.portfolioproject.CovidDeaths`
+
+where continent is null 
+group by location
+order by total_deathcount desc;
+
+
+select date, sum(new_cases), sum(cast(new_deaths as int))
+from 
+`portfolioproject-342411.portfolioproject.CovidDeaths`
+where continent is not null 
+group by date
+order by 1,2;
+
