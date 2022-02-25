@@ -1,0 +1,44 @@
+select *
+from `portfolioproject-342411.portfolioproject.CovidVaccinations`;
+
+select dea.continent, dea. location, dea.date, dea.population, vac.new_vaccinations
+from `portfolioproject-342411.portfolioproject.CovidDeaths` dea
+join `portfolioproject-342411.portfolioproject.CovidVaccinations` vac
+    on dea.location = vac.location
+    and dea.location = vac.location
+where dea.continent is not null
+order by 2,3;
+
+select dea.continent, dea.location, dea.date, sum(vac.new_vaccinations)
+from `portfolioproject-342411.portfolioproject.CovidDeaths` dea
+join `portfolioproject-342411.portfolioproject.CovidVaccinations` vac
+    on dea.location = vac.location
+    and dea.date = vac.date
+where dea.continent is not null 
+group by dea.continent,dea.location, dea.date
+order by 2,3;
+
+select dea.continent, dea. location, dea.date, dea.population, vac.new_vaccinations,
+    sum(cast(vac.new_vaccinations as int)) over (partition by dea.location order by dea.location,dea.date) as cumulative_sum_vaccinations
+from `portfolioproject-342411.portfolioproject.CovidDeaths` dea
+join `portfolioproject-342411.portfolioproject.CovidVaccinations` vac
+    on dea.location = vac.location
+    and dea.date = vac.date
+where dea.continent is not null and dea.location = 'India'
+order by 2,3;
+
+with popvsvac (continent,location,date,population,new_vaccinations,cumulative_sum_vaccinations)
+as
+(
+    select dea.continent, dea. location, dea.date, dea.population, vac.new_vaccinations,
+        sum(cast(vac.new_vaccinations as int)) over (partition by dea.location order by dea.location,dea.date) as cumulative_sum_vaccinations
+    from `portfolioproject-342411.portfolioproject.CovidDeaths` dea
+    join `portfolioproject-342411.portfolioproject.CovidVaccinations` vac
+        on dea.location = vac.location
+        and dea.date = vac.date
+    where dea.continent is not null and dea.location = 'India'
+    order by 2,3;
+)
+
+select *
+from popvsvac
